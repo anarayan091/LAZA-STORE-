@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laza Store - طلب شحن</title>
+<style>
+body{font-family:Arial;background:#f4f6f9;padding:20px}.container{max-width:500px;margin:auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,.15)}
+input,textarea,select,button{width:100%;padding:12px;margin-top:10px;border:1px solid #ccc;border-radius:8px}button{background:#2563eb;color:#fff;border:0}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head><body><div class="container"><h2>طلب شحن</h2>
+<form id="orderForm">
+<input name="username" placeholder="اسم المستخدم" required>
+<input type="email" name="email" placeholder="البريد الإلكتروني" required>
+<input name="game" placeholder="اسم اللعبة" required>
+<input name="uid" placeholder="UID / Username" required>
+<input name="product_id" placeholder="معرف المنتج" required>
+<input name="product" placeholder="اسم المنتج" required>
+<select name="recharge_type" required>
+<option value="">اختر نوع التعبئة</option>
+<option>Maroc Telecom</option>
+<option>Orange</option>
+</select>
+<textarea name="code" required rows="5" placeholder="أدخل رموز التعبئة&#10;مثال:&#10;5DH=12345678901234&#10;10DH=98765432109876"></textarea>
+<input name="voucher" placeholder="رمز القسيمة (اختياري)">
+<textarea name="notes" placeholder="ملاحظات">لا يوجد</textarea>
+<button>إرسال الطلب</button></form><div id="status"></div></div>
+<script>
+emailjs.init({publicKey:"lIJCM6PpQ7iUHlJI8"});
+document.getElementById("orderForm").addEventListener("submit",function(e){
+e.preventDefault();
+const data={
+order_id:"ORD-"+Date.now(),
+username:this.username.value,email:this.email.value,game:this.game.value,
+uid:this.uid.value,product_id:this.product_id.value,product:this.product.value,
+recharge_type:this.recharge_type.value,code:this.code.value,
+voucher:this.voucher.value,notes:this.notes.value};
+emailjs.send("service_rhsuhtu","template_rxblebt",data)
+.then(()=>emailjs.send("service_rhsuhtu","template_yo8ql8r",data))
+.then(()=>{status.innerHTML="✅ تم إرسال الطلب";this.reset();})
+.catch(()=>status.innerHTML="❌ فشل إرسال الطلب");
+});
+</script></body></html>
