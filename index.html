@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laza Store - تتبع الطلب</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
+.container{max-width:520px;margin:auto;padding:28px 18px}.card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+.logo{width:72px;height:72px;border-radius:18px;display:block;margin:0 auto 14px}h1{text-align:center;margin:0 0 8px}
+.subtitle{text-align:center;color:#687386;margin-bottom:22px}label{display:block;margin-bottom:8px;font-weight:700}
+input{width:100%;padding:14px;border:1px solid #d8deea;border-radius:12px;font-size:16px}
+button{width:100%;margin-top:12px;padding:14px;border:0;border-radius:12px;background:#111827;color:#fff;font-size:16px;font-weight:700}
+button:disabled{opacity:.6}.result{display:none;margin-top:20px;padding:18px;border-radius:14px;background:#f7f9fc}
+.row{padding:9px 0;border-bottom:1px solid #e7ebf2}.row:last-child{border-bottom:0}.key{font-weight:700}
+.status{display:inline-block;padding:6px 10px;border-radius:20px;background:#fff3cd}
+.error{display:none;margin-top:16px;padding:13px;border-radius:12px;background:#ffe8e8;color:#a11}
+.loading{display:none;text-align:center;margin-top:14px;color:#687386}
+</style>
+</head>
+<body>
+<div class="container"><div class="card">
+<img class="logo" src="laza-logo.png" alt="Laza Store" onerror="this.style.display='none'">
+<h1>🔎 تتبع طلبك</h1><div class="subtitle">أدخل رقم الطلب لمعرفة حالته</div>
+<label for="orderId">رقم الطلب</label>
+<input id="orderId" type="text" placeholder="مثال: TEST-001" autocomplete="off">
+<button id="trackBtn">تتبع الطلب</button>
+<div id="loading" class="loading">جاري البحث...</div><div id="error" class="error"></div>
+<div id="result" class="result">
+<div class="row"><span class="key">🧾 رقم الطلب:</span> <span id="rOrder"></span></div>
+<div class="row"><span class="key">👤 المستخدم:</span> <span id="rUser"></span></div>
+<div class="row"><span class="key">📦 المنتج:</span> <span id="rProduct"></span></div>
+<div class="row"><span class="key">📌 الحالة:</span> <span id="rStatus" class="status"></span></div>
+<div class="row"><span class="key">🕐 آخر تحديث:</span> <span id="rUpdate"></span></div>
+</div></div></div>
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbwwBOe7r9xE113OpTNAHw5I7FsBD_VSu98w30wdlPQ2FAcUneBxKa07Me2FyQccDFsdSQ/exec";
+const btn=document.getElementById("trackBtn"),input=document.getElementById("orderId"),result=document.getElementById("result"),errorBox=document.getElementById("error"),loading=document.getElementById("loading");
+function showError(m){errorBox.textContent=m;errorBox.style.display="block";result.style.display="none"}
+async function trackOrder(){
+const id=input.value.trim();errorBox.style.display="none";result.style.display="none";
+if(!id){showError("المرجو إدخال رقم الطلب.");return}
+btn.disabled=true;loading.style.display="block";
+try{const r=await fetch(API_URL+"?order_id="+encodeURIComponent(id));const d=await r.json();
+if(!d.success){showError("لم يتم العثور على هذا الطلب. تأكد من رقم الطلب.");return}
+document.getElementById("rOrder").textContent=d.order_id||"-";
+document.getElementById("rUser").textContent=d.username||"-";
+document.getElementById("rProduct").textContent=d.product||"-";
+document.getElementById("rStatus").textContent=d.status||"قيد المراجعة";
+document.getElementById("rUpdate").textContent=d.last_update||"-";
+result.style.display="block"}catch(e){showError("تعذر الاتصال بخدمة التتبع. حاول مرة أخرى.")}finally{btn.disabled=false;loading.style.display="none"}}
+btn.onclick=trackOrder;input.onkeydown=e=>{if(e.key==="Enter")trackOrder};
+</script>
+</body></html>
